@@ -17,7 +17,6 @@ use FFMpeg\Filters\Frame\FrameFilters;
 use FFMpeg\Driver\FFMpegDriver;
 use FFMpeg\FFProbe;
 use FFMpeg\Exception\RuntimeException;
-use FFMpeg\Coordinate\TimeCode;
 
 class AudioCover extends AbstractMediaType
 {
@@ -68,7 +67,8 @@ class AudioCover extends AbstractMediaType
      * Uses the `unaccurate method by default.`
      *
      * @param string  $pathfile
-     * @param Boolean $accurate
+     * @param Boolean $returnBase64
+     * @param Object  $dimensions
      *
      * @return Frame
      *
