@@ -19,17 +19,14 @@ use FFMpeg\FFProbe;
 use FFMpeg\Exception\RuntimeException;
 use FFMpeg\Coordinate\TimeCode;
 
-class Frame extends AbstractMediaType
+class AudioCover extends AbstractMediaType
 {
-    /** @var TimeCode */
-    private $timecode;
     /** @var Video */
     private $video;
 
-    public function __construct(Video $video, FFMpegDriver $driver, FFProbe $ffprobe, TimeCode $timecode)
+    public function __construct(Video $video, FFMpegDriver $driver, FFProbe $ffprobe)
     {
         parent::__construct($video->getPathfile(), $driver, $ffprobe);
-        $this->timecode = $timecode;
         $this->video = $video;
     }
 
@@ -66,14 +63,6 @@ class Frame extends AbstractMediaType
     }
 
     /**
-     * @return TimeCode
-     */
-    public function getTimeCode()
-    {
-        return $this->timecode;
-    }
-
-    /**
      * Saves the frame in the given filename.
      *
      * Uses the `unaccurate method by default.`
@@ -85,7 +74,7 @@ class Frame extends AbstractMediaType
      *
      * @throws RuntimeException
      */
-    public function save($pathfile, $accurate = false, $returnBase64 = false, $dimensions=null)
+    public function save($pathfile, $returnBase64 = false, $dimensions=null)
     {
         /**
          * might be optimized with http://ffmpeg.org/trac/ffmpeg/wiki/Seeking%20with%20FFmpeg
@@ -93,20 +82,12 @@ class Frame extends AbstractMediaType
          */
 
         $outputFormat = $returnBase64 ? "image2pipe" : "image2";
-        if (!$accurate) {
-            $commands = array(
-                '-y', '-ss', (string) $this->timecode,
-                '-i', $this->pathfile,
-                '-vframes', '1',
-                '-f', $outputFormat
-            );
-        } else {
-            $commands = array(
-                '-y', '-i', $this->pathfile,
-                '-vframes', '1', '-ss', (string) $this->timecode,
-                '-f', $outputFormat
-            );
-        }
+        $commands = array(
+            '-y', 
+            '-i', $this->pathfile,
+            '-vframes', '1',
+            '-f', $outputFormat
+        );
         
         if ($dimensions) {
             $sres = $dimensions->getWidth() . ':' . $dimensions->getWidth() . '/a';
@@ -134,7 +115,7 @@ class Frame extends AbstractMediaType
             }
         } catch (ExecutionFailureException $e) {
             $this->cleanupTemporaryFile($pathfile);
-            throw new RuntimeException('Unable to save frame', $e->getCode(), $e);
+            throw new RuntimeException('Unable to save cover', $e->getCode(), $e);
         }
     }
 }
