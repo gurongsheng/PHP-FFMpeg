@@ -124,4 +124,17 @@ class Audio extends AbstractStreamableMedia
     {
         return new AudioCover($this, $this->driver, $this->ffprobe);
     }
+    
+    /**
+     * Extracts a gif from a sequence of the Audio
+     *
+     * @param  TimeCode $at
+     * @param  Dimension $dimension
+     * @param  integer $duration
+     * @return Gif
+     */
+    public function wave_gif( \FFMpeg\Coordinate\TimeCode $at, \FFMpeg\Coordinate\Dimension $dimension, $duration = null)
+    {
+        return new WaveGif($this, $this->driver, $this->ffprobe, $at, $dimension, $duration);
+    }
 }
